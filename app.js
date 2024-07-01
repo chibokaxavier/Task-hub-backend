@@ -3,6 +3,7 @@ const app = express();
 const port = 3001;
 const cors = require("cors");
 const tasks = require("./routes/tasks");
+const employee = require("./routes/employee");
 const connectDB = require("./db/connect");
 require("dotenv").config();
 
@@ -11,6 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/v1/tasks", tasks);
+app.use("/api/v1/employee", employee);
 const start = async () => {
   try {
     await connectDB(process.env.URL);
@@ -20,4 +22,5 @@ const start = async () => {
   }
 };
 start();
- 
+
+
