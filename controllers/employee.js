@@ -1,7 +1,8 @@
 const Employee = require("../models/Employee");
 const cookieParser = require("cookie-parser");
-const JWT_SECRET = process.env.JWT_SECRET;
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
+const JWT_SECRET = process.env.JWT_SECRET;
 const createEmployee = async (req, res) => {
   try {
     const employee = await Employee.create(req.body);
@@ -13,7 +14,7 @@ const createEmployee = async (req, res) => {
 
 const logEmployeeIn = async (req, res) => {
   try {
-    const { email, password } = req.Body;
+    const { email, password } = req.body;
     const employee = await Employee.findOne({ email });
     if (!employee || employee.password !== password) {
       return res.status(401).json({ message: "Invalid Email or password" });
@@ -21,11 +22,16 @@ const logEmployeeIn = async (req, res) => {
     const token = jwt.sign({ employeeId: employee._id }, JWT_SECRET, {
       expiresIn: "1h",
     });
+    console.log("token", token);
     res.cookie("token", token, { httpOnly: true });
     res.json({ message: "logged in successfully" });
   } catch (error) {
-    console.log(error, "Failed to log in");
+    res.status(500).json({ error });
   }
 };
 
-module.exports = { createEmployee, logEmployeeIn };
+const logEmployeeOut = async (req, res) => {
+  res.clearCookie("token");
+  res.json({ message: "Logged out successfully" });
+};
+module.exports = { createEmployee, logEmployeeIn, logEmployeeOut };
