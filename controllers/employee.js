@@ -22,8 +22,10 @@ const logEmployeeIn = async (req, res) => {
     const token = jwt.sign({ employeeId: employee._id }, JWT_SECRET, {
       expiresIn: "1h",
     });
-    console.log("token", token);
-    res.cookie("token", token, { httpOnly: true });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
     res.json({ message: "logged in successfully" });
   } catch (error) {
     res.status(500).json({ error });
@@ -34,4 +36,9 @@ const logEmployeeOut = async (req, res) => {
   res.clearCookie("token");
   res.json({ message: "Logged out successfully" });
 };
-module.exports = { createEmployee, logEmployeeIn, logEmployeeOut };
+
+module.exports = {
+  createEmployee,
+  logEmployeeIn,
+  logEmployeeOut,
+};
